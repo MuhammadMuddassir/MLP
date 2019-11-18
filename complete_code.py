@@ -12,11 +12,19 @@ from csv import reader
 from math import exp
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import cohen_kappa_score
+import matplotlib.pyplot as plt
+from itertools import cycle
+from sklearn import svm, datasets
+from sklearn.metrics import roc_curve, auc
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import label_binarize
+from sklearn.multiclass import OneVsRestClassifier
+from scipy import inter
 import numpy as np
 import pandas as pd
 import csv
  
-# Load a CSV file
+
 def loadCsv(filename):
         trainSet = []
         
@@ -34,13 +42,13 @@ def minmax(dataset):
         stats = [[min(column), max(column)] for column in zip(*dataset)]
         return stats
  
-# Rescale dataset columns to the range 0-1
+
 def normalize(dataset, minmax):
         for row in dataset:
                 for i in range(len(row)-1):
                         row[i] = (row[i] - minmax[i][0]) / (minmax[i][1] - minmax[i][0])
  
-# Convert string column to float
+
 def column_to_float(dataset, column):
         for row in dataset:
                 try:
@@ -49,7 +57,7 @@ def column_to_float(dataset, column):
                         print("Error with row",column,":",row[column])
                         pass
  
-# Convert string column to integer
+
 def column_to_int(dataset, column):
         class_values = [row[column] for row in dataset]
         unique = set(class_values)
@@ -60,10 +68,8 @@ def column_to_int(dataset, column):
                 row[column] = lookup[row[column]]
         return lookup
  
-# Find the min and max values for each column
-
  
-# Split a dataset into k folds
+
 def cross_validation_split(dataset, n_folds):
         dataset_split = list()
         dataset_copy = list(dataset)
@@ -76,7 +82,7 @@ def cross_validation_split(dataset, n_folds):
                 dataset_split.append(fold)
         return dataset_split
  
-# Calculate accuracy percentage
+
 def accuracy_met(actual, predicted):
         correct = 0
         for i in range(len(actual)):
@@ -84,7 +90,7 @@ def accuracy_met(actual, predicted):
                         correct += 1
         return correct / float(len(actual)) * 100.0
  
-# Evaluate an algorithm using a cross validation split
+
 def run_algorithm(dataset, algorithm, n_folds, *args):
         
         folds = cross_validation_split(dataset, n_folds)
@@ -131,19 +137,18 @@ def run_algorithm(dataset, algorithm, n_folds, *args):
                 print('Çohen Kappa \n{}'.format(k))
                 scores.append(accuracy)
         return scores
- 
-# Calculate neuron activation for an input
+
 def activate(weights, inputs):
         activation = weights[-1]
         for i in range(len(weights)-1):
                 activation += weights[i] * inputs[i]
         return activation
  
-# Transfer neuron activation
+
 def transfer(activation):
         return 1.0 / (1.0 + exp(-activation))
  
-# Forward propagate input to a network output
+
 def forward_propagate(network, row):
         inputs = row
         for layer in network:
@@ -154,12 +159,11 @@ def forward_propagate(network, row):
                         new_inputs.append(neuron['output'])
                 inputs = new_inputs
         return inputs
- 
-# Calculate the derivative of an neuron output
+
 def transfer_derivative(output):
         return output * (1.0 - output)
  
-# Backpropagate error and store in neurons
+
 def backward_propagate_error(network, expected):
         for i in reversed(range(len(network))):
                 layer = network[i]
@@ -178,7 +182,7 @@ def backward_propagate_error(network, expected):
                         neuron = layer[j]
                         neuron['delta'] = errors[j] * transfer_derivative(neuron['output'])
  
-# Update network weights with error
+
 def update_weights(network, row, l_rate):
         for i in range(len(network)):
                 inputs = row[:-1]                
@@ -208,7 +212,7 @@ def train_network(network, train, l_rate, n_epoch, n_outputs):
                         backward_propagate_error(network, expected)
                         update_weights(network, row, l_rate)
  
-# Initialize a network
+
 def initialize_network(n_inputs, n_hidden, n_outputs):
         network = list()
         hidden_layer = [{'weights':[random() for i in range(n_inputs + 1)], 'prev':[0 for i in range(n_inputs+1)]} for i in range(n_hidden)]        
@@ -220,12 +224,12 @@ def initialize_network(n_inputs, n_hidden, n_outputs):
         #print(network)
         return network
  
-# Make a prediction with a network
+
 def predict(network, row):
         outputs = forward_propagate(network, row)
         return outputs.index(max(outputs))
  
-# Backpropagation Algorithm With Stochastic Gradient Descent
+
 def back_propagation(train, test, l_rate, n_epoch, n_hidden):
         n_inputs = len(train[0]) - 1
         n_outputs = len(set([row[-1] for row in train]))
@@ -238,9 +242,9 @@ def back_propagation(train, test, l_rate, n_epoch, n_hidden):
                 predictions.append(prediction)
         return(predictions)
  
-# Test Backprop on Seeds dataset
+
 seed(1)
-# load and prepare data
+
 filename = 'filename'
 dataset = loadCsv(filename)
 for i in range(len(dataset[0])-1):
@@ -261,19 +265,11 @@ scores = run_algorithm(dataset, back_propagation, n_folds, l_rate, n_epoch, n_hi
 print('Scores: %s' % scores)
 print('Mean Accuracy: %.3f%%' % (sum(scores)/float(len(scores))))
 
-from sklearn.metrics import roc_curve, auc
-from sklearn import datasets
-from sklearn.multiclass import OneVsRestClassifier
-from sklearn.svm import LinearSVC
-from sklearn.preprocessing import label_binarize
-from sklearn.cross_validation import train_test_split
-import matplotlib.pyplot as plt
-import csv
 
 
-datum = pd.read_csv('data_review_1.csv')
-X= iris.iloc[:,0:4].values
-y = iris.iloc[:,-1].values
+datum = pd.read_csv('file_name.csv')
+X= datum.iloc[:,0:4].values
+y = datum.iloc[:,-1].values
 
 y = label_binarize(y, classes=[1,2,3,4,5,6])
 n_classes = 6
@@ -308,19 +304,8 @@ for i in range(n_classes):
     
 print(__doc__)
 
-import numpy as np
-import matplotlib.pyplot as plt
-from itertools import cycle
+""" P;otting ROC Curves"""
 
-from sklearn import svm, datasets
-from sklearn.metrics import roc_curve, auc
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import label_binarize
-from sklearn.multiclass import OneVsRestClassifier
-from scipy import interp
-import pandas as pd
-
-# Import some data to play with
 data_set = pd.read_csv('data_review_1.csv')
 X= data_set.iloc[:,0:4].values
 y = data_set.iloc[:,-1].values
@@ -331,21 +316,19 @@ n_classes = 6
 y = label_binarize(y, classes=[1, 2, 3, 4, 5, 6])
 n_classes = y.shape[1]
 
-# Add noisy features to make the problem harder
 random_state = np.random.RandomState(0)
 n_samples, n_features = X.shape
 X = np.c_[X, random_state.randn(n_samples, 200 * n_features)]
 
-# shuffle and split training and test sets
+
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.2,
                                                     random_state=0)
 
-# Learn to predict each class against the other
 classifier = OneVsRestClassifier(svm.SVC(kernel='linear', probability=True,
                                  random_state=random_state))
 y_score = classifier.fit(X_train, y_train).decision_function(X_test)
 
-# Compute ROC curve and ROC area for each class
+#  ROC curve and AUC for each class
 fpr = dict()
 tpr = dict()
 roc_auc = dict()
@@ -353,7 +336,7 @@ for i in range(n_classes):
     fpr[i], tpr[i], _ = roc_curve(y_test[:, i], y_score[:, i])
     roc_auc[i] = auc(fpr[i], tpr[i])
 
-# Compute micro-average ROC curve and ROC area
+#  micro-average ROC curve and AUC 
 fpr["micro"], tpr["micro"], _ = roc_curve(y_test.ravel(), y_score.ravel())
 roc_auc["micro"] = auc(fpr["micro"], tpr["micro"])
 
@@ -370,17 +353,16 @@ plt.title('Receiver operating characteristic example')
 plt.legend(loc="lower right")
 plt.show()
 
-# Compute macro-average ROC curve and ROC area
 
-# First aggregate all false positive rates
+
+
 all_fpr = np.unique(np.concatenate([fpr[i] for i in range(n_classes)]))
 
-# Then interpolate all ROC curves at this points
+
 mean_tpr = np.zeros_like(all_fpr)
 for i in range(n_classes):
     mean_tpr += interp(all_fpr, fpr[i], tpr[i])
 
-# Finally average it and compute AUC
 mean_tpr /= n_classes
 
 fpr["macro"] = all_fpr
@@ -414,17 +396,14 @@ plt.title('Some extension of Receiver operating characteristic to multi-class')
 plt.legend(loc="lower right")
 plt.show()
 
-# Compute macro-average ROC curve and ROC area
-
-# First aggregate all false positive rates
 all_fpr = np.unique(np.concatenate([fpr[i] for i in range(n_classes)]))
 
-# Then interpolate all ROC curves at this points
+
 mean_tpr = np.zeros_like(all_fpr)
 for i in range(n_classes):
     mean_tpr += interp(all_fpr, fpr[i], tpr[i])
 
-# Finally average it and compute AUC
+
 mean_tpr /= n_classes
 
 fpr["macro"] = all_fpr
