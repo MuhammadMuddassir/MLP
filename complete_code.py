@@ -251,11 +251,11 @@ column_to_int(dataset, len(dataset[0])-1)
 minmax = minmax(dataset)
 normalize(dataset, minmax)
 # evaluate algorithm
-n_folds = 5
+n_folds = 5 # 10
 l_rate = 0.1
 mu=0.001
-n_epoch = 1500
-n_hidden = 4
+n_epoch = 15000
+n_hidden = 6
 scores = run_algorithm(dataset, back_propagation, n_folds, l_rate, n_epoch, n_hidden)
 
 print('Scores: %s' % scores)
