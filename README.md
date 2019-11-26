@@ -4,6 +4,7 @@
 ### Table of contents
 * [General info](#general-info)
 * [Technologies](#technologies)
+* [Performance Evaluation](#performance-Evaluation)
 * [Setup](#setup)
 
 ## General Info
@@ -29,5 +30,11 @@ Project is created with:
   * scikitlearn
   * matplotlib
 	
+
+## Performance Evaluation
+ * Two metrics use to evaluate the model
+ * Confusion matrix
+ * ROC Curve
+
 ## Setup
 To run this project, install it locally using python ver 3.6.7, Anaconda.
