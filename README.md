@@ -2,7 +2,7 @@
 
 
 ### Table of contents
-* [General info](#general-info)
+* [General Info](#general-Info)
 * [Technologies](#technologies)
 * [Performance Evaluation](#performance-Evaluation)
 * [Setup](#setup)
